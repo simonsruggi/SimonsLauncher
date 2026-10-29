@@ -1,21 +1,28 @@
 package com.simonslauncher.app.ui.screens
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.simonslauncher.app.LauncherViewModel
@@ -39,8 +46,10 @@ fun HomeScreen(viewModel: LauncherViewModel) {
     val spotlight by viewModel.spotlight.collectAsStateWithLifecycle()
     val homePresses by viewModel.homePresses.collectAsStateWithLifecycle()
     val sources by viewModel.sources.collectAsStateWithLifecycle()
-    // The page scrolls down to the sources row; focus moving there brings it into view.
-    val pageScroll = rememberScrollState()
+    // The page slides up only while the sources row (below the screen) has focus. A scroll
+    // container would also scroll on focus moves inside the app row, hiding the top bar.
+    var sourcesFocused by remember { mutableStateOf(false) }
+    var pageHeight by remember { mutableIntStateOf(0) }
 
     // Read only inside Backdrop: moving focus never recomposes the whole screen.
     val backdrop = remember { mutableStateOf<BackdropSource>(BackdropSource.Plain) }
@@ -87,14 +96,26 @@ fun HomeScreen(viewModel: LauncherViewModel) {
         userMoved = false
         spotlightArt?.let { backdrop.value = BackdropSource.Art(it) }
         listState.scrollToItem(0)
-        pageScroll.scrollTo(0)
         focusTarget = apps.firstOrNull()?.packageName
     }
 
-    Box(Modifier.fillMaxSize()) {
+    BoxWithConstraints(Modifier.fillMaxSize()) {
+        val screenHeight = constraints.maxHeight
+        val pageShift = animateFloatAsState(
+            if (sourcesFocused) (pageHeight - screenHeight).coerceAtLeast(0).toFloat() else 0f,
+            tween(260),
+            label = "pageShift"
+        )
         Backdrop(source = { backdrop.value }, modifier = Modifier.fillMaxSize())
 
-        Column(modifier = Modifier.fillMaxSize().verticalScroll(pageScroll).padding(top = 18.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(align = Alignment.Top, unbounded = true)
+                .onSizeChanged { pageHeight = it.height }
+                .graphicsLayer { translationY = -pageShift.value }
+                .padding(top = 18.dp)
+        ) {
             TopBar(clock = clock, weather = weather, onOpenSettings = { viewModel.openSettings() })
 
             Spacer(Modifier.height(18.dp))
@@ -128,7 +149,9 @@ fun HomeScreen(viewModel: LauncherViewModel) {
             SourcesRow(
                 sources = sources,
                 onOpen = { viewModel.openSource(it) },
-                modifier = Modifier.padding(top = 10.dp, bottom = 24.dp)
+                modifier = Modifier
+                    .padding(top = 10.dp, bottom = 24.dp)
+                    .onFocusChanged { sourcesFocused = it.hasFocus }
             )
         }
 

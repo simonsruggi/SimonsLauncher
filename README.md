@@ -3,6 +3,14 @@
 A fast, lightweight home screen for Android TV, built with Jetpack Compose.
 Made for (and tested on) a Sony BRAVIA running Android TV 9 with 2 GB of RAM.
 
+![Home](docs/screenshots/home.jpg)
+
+| App focused: its titles in the spotlight | HDMI/AV sources below the apps | Long press: move or hide |
+|---|---|---|
+| ![App focused](docs/screenshots/app-focused.jpg) | ![Sources](docs/screenshots/sources.jpg) | ![Move or hide](docs/screenshots/move-hide.jpg) |
+
+<sub>Artwork published by the apps is blurred in these screenshots.</sub>
+
 ## Features
 
 - **Spotlight with real titles**: shows what Netflix, Prime Video, DAZN and other apps
