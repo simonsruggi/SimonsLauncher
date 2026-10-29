@@ -4,7 +4,7 @@
 Android TV launcher (Kotlin + Jetpack Compose). Target: Sony BRAVIA 4K GB, Android 9, 2GB RAM.
 
 ## Build
-- **On the TV always install the release build**: `./gradlew assembleRelease` → `app/build/outputs/apk/release/app-release.apk` (R8, 1.9 MB, signed with the debug key, package `com.simonslauncher.app`). Debug Compose is ~2.5x slower to start (465 vs 180 ms cold start on the emulator).
+- **On the TV always install the release build**: `./gradlew assembleRelease` → `app/build/outputs/apk/release/app-release.apk` (R8, ~1.8 MB, package `com.simonslauncher.app`), signed with the release key in `~/.simonslauncher/` (`signing.properties` + `release.keystore`, chmod 600, never in the repo; losing it = users can't update). Publish: bump `versionName`/`versionCode`, `gh release create vX.Y.Z SimonsLauncher-X.Y.Z.apk`. Debug Compose is ~2.5x slower to start (465 vs 180 ms cold start on the emulator).
 - `./gradlew assembleDebug` for debug APK (requires Java 26+, Gradle 9.1.0)
 - Debug uses `.debug` suffix so it installs alongside any release version
 - ADB: `adb connect Android.local.:5555`
