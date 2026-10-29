@@ -38,25 +38,46 @@ Made for (and tested on) a Sony BRAVIA running Android TV 9 with 2 GB of RAM.
 Measured on a Sony BRAVIA (Android 9, 2 GB RAM): ~700 ms cold start, ~30-50 MB of RAM,
 1.8 MB APK. No image-loading or UI libraries beyond Compose foundation.
 
-## Build
+## Install
+
+Download `SimonsLauncher-<version>.apk` from the
+[latest release](https://github.com/simonsruggi/simonslauncher/releases/latest), then pick one way
+to get it on the TV:
+
+- **USB stick**: copy the APK to a stick, plug it into the TV and open it with a file manager
+  (e.g. *File Commander* or *X-plore* from the Play Store).
+- **Downloader app** (Play Store, by AFTVnews): type the APK link and install.
+- **From a computer with adb** (enable *Developer options* → *USB/network debugging* on the TV):
+
+  ```bash
+  adb connect <tv-ip>:5555
+  adb install SimonsLauncher-<version>.apk
+  ```
+
+The first time, Android asks to allow installing apps from that source: allow it.
+
+### Make it your home screen
+
+- Press **Home** on the remote: if Android asks which home to use, choose SimonsLauncher → *Always*.
+- If it doesn't ask (some TVs keep their own launcher), set it with adb:
+
+  ```bash
+  adb shell cmd package set-home-activity com.simonslauncher.app/.MainActivity
+  ```
+
+On first launch the launcher asks permission to read the titles other apps publish: allow it to
+fill the spotlight.
+
+To go back to the original launcher, uninstall SimonsLauncher or choose the other home when asked.
+
+## Build from source
 
 ```bash
 ./gradlew assembleRelease
-adb install -r app/build/outputs/apk/release/app-release.apk
 ```
 
-Requires JDK 17+ and the Android SDK. The release build is signed with your local debug
-key; configure your own signing for distribution.
-
-## Setup on the TV
-
-```bash
-# Let the launcher read the titles other apps publish (also asked on first launch)
-adb shell pm grant com.simonslauncher.app android.permission.READ_TV_LISTINGS
-
-# Make it the default home screen
-adb shell cmd package set-home-activity com.simonslauncher.app/.MainActivity
-```
+Requires JDK 17+ and the Android SDK. Without a release key the APK is signed with your local
+debug key; it then can't update an APK downloaded from the releases (uninstall that first).
 
 The weather location is currently hard-coded (Naples, Italy) in `WeatherClient.kt`.
 

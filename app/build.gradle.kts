@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -16,13 +18,27 @@ android {
         versionName = "1.0.0"
     }
 
+    // Release key lives outside the repo (~/.simonslauncher/signing.properties).
+    // Without it, release builds fall back to the local debug key so anyone can build.
+    val signingFile = File(System.getProperty("user.home"), ".simonslauncher/signing.properties")
+    signingConfigs {
+        if (signingFile.exists()) {
+            create("release") {
+                val props = Properties().apply { signingFile.inputStream().use { load(it) } }
+                storeFile = file(props.getProperty("storeFile"))
+                storePassword = props.getProperty("storePassword")
+                keyAlias = props.getProperty("keyAlias")
+                keyPassword = props.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         debug {
             applicationIdSuffix = ".debug"
         }
         release {
-            // Sideloaded on the home TV only: the debug key is enough and keeps updates installable.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
