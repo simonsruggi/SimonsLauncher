@@ -1,7 +1,12 @@
 # SimonsLauncher
 
-A fast, lightweight home screen for Android TV, built with Jetpack Compose.
+A fast, lightweight and good-looking home screen for Android TV, built with Jetpack Compose.
 Made for (and tested on) a Sony BRAVIA running Android TV 9 with 2 GB of RAM.
+
+Most lightweight launchers get there by dropping the visuals: a plain grid of icons.
+SimonsLauncher keeps a cinema-style home (big artwork, a background that follows what you
+select, smooth focus animations) and still starts faster and uses less memory than the
+popular alternative we measured it against.
 
 ![Home](docs/screenshots/home.jpg)
 
@@ -33,10 +38,35 @@ Made for (and tested on) a Sony BRAVIA running Android TV 9 with 2 GB of RAM.
 - **Safe mode**: if the launcher crashes twice at start, it opens a bare app list so the
   TV is never left without a home screen.
 
+## Design
+
+- Gold-on-black theme, a single accent color, no visual clutter.
+- **Spotlight**: the focused app's real titles as large 16:9 artwork, with title and
+  description beside it.
+- **Background that follows your focus**: the selected title's artwork, blurred, or the app's
+  color for apps that publish none.
+- **Animated focus**: the selected tile grows with a soft gold glow, animated in the draw phase
+  so it stays smooth on weak TV GPUs.
+- Official app banners, clock, live weather, TV navigation sounds.
+
 ## Performance
 
-Measured on a Sony BRAVIA (Android 9, 2 GB RAM): ~700 ms cold start, ~30-50 MB of RAM,
-1.8 MB APK. No image-loading or UI libraries beyond Compose foundation.
+Measured on a Sony BRAVIA (Android TV 9, 2 GB RAM) on 29 October 2026, same conditions for
+both apps (compiled, 5 cold starts each, same 32-key navigation):
+
+| | SimonsLauncher 1.0.0 | Projectivy Launcher 4.72 |
+|---|---|---|
+| Cold start | ~690 ms | ~1,200 ms |
+| RAM (PSS, on screen) | 45-51 MB | 76 MB |
+| APK size | 1.6 MB | 10.9 MB |
+| Median frame time while navigating | 19 ms | 24 ms |
+
+One device, one measurement session: your numbers will differ. Projectivy offers many features
+SimonsLauncher doesn't (themes, custom rows, input shortcuts on more TVs); this is a comparison
+of speed and footprint, not of features.
+
+No image-loading or UI libraries beyond Compose foundation; artwork is decoded off the main
+thread at the size it is drawn, and clock and weather stop while another app is on screen.
 
 ## Install
 
