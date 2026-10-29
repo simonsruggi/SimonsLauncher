@@ -1,0 +1,2 @@
+-keepattributes *Annotation*
+-keep class com.simonslauncher.app.model.** { *; }
