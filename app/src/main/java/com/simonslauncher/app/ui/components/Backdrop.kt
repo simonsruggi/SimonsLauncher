@@ -29,7 +29,7 @@ sealed interface BackdropSource {
 
 /** Opaque brand-tint images with the shade baked in, for apps that publish no titles. */
 fun tintFor(brand: Brand?): BackdropSource = when (brand) {
-    Brand.YOUTUBE, Brand.SMARTTUBE -> BackdropSource.Tint(R.drawable.bg_youtube)
+    Brand.YOUTUBE -> BackdropSource.Tint(R.drawable.bg_youtube)
     Brand.DISNEY -> BackdropSource.Tint(R.drawable.bg_disney)
     Brand.RAIPLAY -> BackdropSource.Tint(R.drawable.bg_raiplay)
     Brand.NOW -> BackdropSource.Tint(R.drawable.bg_now)

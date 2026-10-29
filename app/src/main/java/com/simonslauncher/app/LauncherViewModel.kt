@@ -50,7 +50,7 @@ class LauncherViewModel(application: Application) : AndroidViewModel(application
 
     /**
      * Apps in the saved order first. Apps installed later: a streaming brand slots in before the
-     * first app of a later brand (SmartTube lands before YouTube), anything else goes last.
+     * first app of a later brand (e.g. a newly installed Disney+ lands before RaiPlay), anything else goes last.
      */
     private fun arrange(apps: List<AppInfo>, order: List<String>): List<AppInfo> {
         val position = order.withIndex().associate { (i, pkg) -> pkg to i }
